@@ -38,16 +38,19 @@ def addEntry(filename, name_or_ref, award_date):
     pFile.write('\n')
     pFile.close()
     
+
 def timestampToDate(timestamp):
-    day = int(timestamp[3:5])
-    month = int(timestamp[0:2])
-    year = int(timestamp[6:10])
+    timestampArr = timestamp.split('/')
+    day = int(timestampArr[0][:2])
+    month = int(timestampArr[1][:2])
+    year = int(timestampArr[2][:4])
     return day, month, year
-    
+
 def timestampToD4h(timestamp):
-    day = timestamp[3:5]
-    month = timestamp[0:2]
-    year = timestamp[6:10]
+    timestampArr = timestamp.split('/')
+    day = timestampArr[0][:2]
+    month = timestampArr[1][:2]
+    year = timestampArr[2][:4]
     return (year + '-' + month + '-' + day)
 
 def isInTheFuture(reference, date):
@@ -60,11 +63,13 @@ def isInTheFuture(reference, date):
     return False
 
 readFilename = input("Enter input filename (name.csv): ")
+
 uploadFromStr = input("Enter date to upload from (dd/mm/yyyy): ")
+uploadFromDate = timestampToDate(uploadFromStr)
+print()
+print('Upload from date is: ', uploadFromDate)
+
 writeFilename = readFilename[:-4] + '_d4h.csv'
-
-uploadFromDate = (int(uploadFromStr[0:2]),int(uploadFromStr[3:5]),int(uploadFromStr[6:10]))
-
 writeHeaders(writeFilename)
 
 pReadFile = open(readFilename, 'r')
@@ -85,12 +90,20 @@ for header in headerArr:
     if ((header == 'Has the candidate passed this assessment?') or (header == 'Has the candidate passed this assessment?\n')):
         passIndex = indexCount
     indexCount += 1
+    
+print('Timestamp index is: ', timestampIndex)
+print('Callsign index is: ', callsignIndex)
+print('Pass index is: ', passIndex)
 
+entryCount = 0
 for lineStr in pReadFile.readlines():
     lineArr = lineStr.split(',')
     
-    if (lineArr[passIndex] == 'Yes\n'):
+    if ((lineArr[passIndex] == 'Yes') or (lineArr[passIndex] == 'Yes\n')):
         date = timestampToDate(lineArr[timestampIndex])
         if (isInTheFuture(uploadFromDate, date)):
             d4h = timestampToD4h(lineArr[timestampIndex])
             addEntry(writeFilename, lineArr[callsignIndex], d4h)
+            entryCount += 1
+            
+print(entryCount, ' entries added')
