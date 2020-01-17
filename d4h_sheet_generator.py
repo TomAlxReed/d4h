@@ -41,16 +41,15 @@ def addEntry(filename, name_or_ref, award_date):
 
 def timestampToDate(timestamp):
     timestampArr = timestamp.split('/')
-    day = int(timestampArr[0][:2])
-    month = int(timestampArr[1][:2])
+    day = int(timestampArr[1][:2])
+    month = int(timestampArr[0][:2])
     year = int(timestampArr[2][:4])
     return day, month, year
 
-def timestampToD4h(timestamp):
-    timestampArr = timestamp.split('/')
-    day = timestampArr[0][:2]
-    month = timestampArr[1][:2]
-    year = timestampArr[2][:4]
+def dateToD4h(date):
+    day = str(date[0]).zfill(2)
+    month = str(date[1]).zfill(2)
+    year = str(date[2]).zfill(4)
     return (year + '-' + month + '-' + day)
 
 def isInTheFuture(reference, date):
@@ -102,7 +101,7 @@ for lineStr in pReadFile.readlines():
     if ((lineArr[passIndex] == 'Yes') or (lineArr[passIndex] == 'Yes\n')):
         date = timestampToDate(lineArr[timestampIndex])
         if (isInTheFuture(uploadFromDate, date)):
-            d4h = timestampToD4h(lineArr[timestampIndex])
+            d4h = dateToD4h(date)
             addEntry(writeFilename, lineArr[callsignIndex], d4h)
             entryCount += 1
             
