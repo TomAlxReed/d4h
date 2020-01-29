@@ -37,7 +37,6 @@ def addEntry(filename, name_or_ref, award_date):
     pFile.write(award_date)
     pFile.write('\n')
     pFile.close()
-    
 
 def timestampToDate(timestamp):
     timestampArr = timestamp.split('/')
